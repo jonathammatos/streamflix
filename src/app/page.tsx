@@ -1,3 +1,4 @@
+import { Play, Info } from "lucide-react";
 import Header from "@/components/layout/Header";
 
 import Button from "@/components/common/Button";
@@ -18,8 +19,14 @@ export default function Home() {
             Sinopse curta da série ou filme em destaque...
           </p>
           <div className="flex gap-4">
-            <Button variant="primary">Assistir</Button>
-            <Button variant="secondary">Informações</Button>
+            <Button variant="primary">
+              <Play className="w-5 h-5 fill-current" />
+              Play Trailer
+            </Button>
+            <Button variant="secondary">
+              <Info className="w-5 h-5" />
+              Info
+            </Button>
           </div>
         </div>
       </section>
