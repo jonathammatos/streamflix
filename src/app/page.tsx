@@ -4,19 +4,25 @@ import HeroBanner from "@/components/media/HeroBanner";
 import MediaRow from "@/components/media/MediaRow";
 import { MediaCardProps } from "@/components/media/MediaCard";
 
-export default function Home() {
-  const todasAsMidias: MediaCardProps[] = [
-    /* ... dados do TMDB ... */
-  ];
+import {
+  getSeriesEmAlta,
+  getDesenhosEAnimes,
+  getFilmesRecomendados,
+} from "@/services/tmdb";
 
-  const series = todasAsMidias.filter((item) => item.mediaType === "Série");
-  const desenhos = todasAsMidias.filter((item) => item.mediaType === "Desenho");
-  const filmes = todasAsMidias.filter((item) => item.mediaType === "filme");
+export default async function Home() {
+  const [filmes, series, desenhos] = await Promise.all([
+    getFilmesRecomendados(),
+    getSeriesEmAlta(),
+    getDesenhosEAnimes(),
+  ]);
+
+  const destaque = filmes[0];
 
   return (
     <main className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 transition-colors">
       <Header />
-      <HeroBanner />
+      <HeroBanner title={destaque.title} posterUrl={destaque.posterUrl} />
 
       <MediaRow title="Séries em Alta" cards={series} />
       <MediaRow title="Desenhos e Animes" cards={desenhos} />
