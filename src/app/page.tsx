@@ -1,4 +1,5 @@
 import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 import HeroBanner from "@/components/media/HeroBanner";
 import MediaRow from "@/components/media/MediaRow";
 import { MediaCardProps } from "@/components/media/MediaCard";
@@ -20,6 +21,8 @@ export default function Home() {
       <MediaRow title="Séries em Alta" cards={series} />
       <MediaRow title="Desenhos e Animes" cards={desenhos} />
       <MediaRow title="Filmes Recomendados" cards={filmes} />
+
+      <Footer />
     </main>
   );
 }
