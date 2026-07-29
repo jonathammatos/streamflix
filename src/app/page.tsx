@@ -2,7 +2,6 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import HeroBanner from "@/components/media/HeroBanner";
 import MediaRow from "@/components/media/MediaRow";
-import { MediaCardProps } from "@/components/media/MediaCard";
 
 import {
   getSeriesEmAlta,

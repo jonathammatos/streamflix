@@ -14,18 +14,17 @@ export default function MediaCard({
   mediaType,
 }: MediaCardProps) {
   return (
-    <div className="relative group w-36 md:w-44 lg:w-52 flex-none cursor-pointer">
-      {/* Container com proporção de poster (2:3) */}
-      <div className="relative w-full aspect-[2/3] overflow-hidden rounded-md transition-transform duration-300 hover:scale-105 hover:ring-2 hover:ring-zinc-300">
+    <div className="relative group/card w-36 md:w-44 lg:w-52 flex-none cursor-pointer">
+      <div className="relative w-full aspect-[2/3] overflow-hidden rounded-md transition-transform duration-300">
         <Image
           src={posterUrl}
           alt={title}
           fill
-          className="object-cover"
+          className="object-cover transition-transform duration-300 group-hover/card:scale-105"
           sizes="(max-width: 768px) 144px, (max-width: 1024px) 176px, 208px"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
           <span className="text-white font-medium text-sm truncate">
             {title}
           </span>

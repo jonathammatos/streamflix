@@ -4,6 +4,30 @@ const BASE_URL = "https://api.themoviedb.org/3";
 
 const TOKEN = process.env.TMDB_ACCESS_TOKEN;
 
+interface FiltrosBusca {
+  page?: number;
+  with_genres?: string;
+  primary_release_year?: string;
+  sort_by?: string;
+  wih_original_language?: string;
+}
+
+export interface Genero {
+  id: number;
+  name: string;
+}
+
+export async function getGeneros(): Promise<Genero[]> {
+  const res = await fetch(
+    `${BASE_URL}/genre/movie/list?language=pt-BR`,
+    fetchOptions,
+  );
+  if (!res.ok) throw new Error("Falha ao carregar gêneros");
+
+  const data = await res.json();
+  return data.genres;
+}
+
 const fetchOptions = {
   method: "GET",
   headers: {
@@ -24,6 +48,22 @@ function mapToMediaCard(
       : "/placeholder.png",
     mediaType: mediaType,
   };
+}
+
+export async function getFilmesFiltrados(filtros: FiltrosBusca = {}) {
+  const params = new URLSearchParams({
+    language: "pt-BR",
+    page: (filtros.page || 1).toString(),
+    sort_by: filtros.sort_by || "popularity.desc",
+  });
+
+  if (filtros.with_genres) params.append("with_genres", filtros.with_genres);
+
+  if (filtros.primary_release_year)
+    params.append("primay_realease_year", filtros.primary_release_year);
+
+  if (filtros.with_original_language)
+    params.append("with_original_language", filtros.with_original_language);
 }
 
 export async function getSeriesEmAlta(): Promise<MediaCardProps[]> {
