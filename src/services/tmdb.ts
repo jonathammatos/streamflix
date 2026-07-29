@@ -2,14 +2,24 @@ import { MediaCardProps } from "@/components/media/MediaCard";
 
 const BASE_URL = "https://api.themoviedb.org/3";
 
-const TOKEN = process.env.TMDB_ACCESS_TOKEN;
+const TOKEN = process.env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN;
 
-interface FiltrosBusca {
+const fetchOptions = {
+  method: "GET",
+  headers: {
+    accept: "application/json",
+    Authorization: `Bearer ${TOKEN}`,
+  },
+};
+
+export interface FiltrosBusca {
   page?: number;
   with_genres?: string;
   primary_release_year?: string;
   sort_by?: string;
-  wih_original_language?: string;
+  with_original_language?: string;
+  "primary_release_date.gte"?: string;
+  "primary_release_date.lte"?: string;
 }
 
 export interface Genero {
@@ -28,14 +38,6 @@ export async function getGeneros(): Promise<Genero[]> {
   return data.genres;
 }
 
-const fetchOptions = {
-  method: "GET",
-  headers: {
-    accept: "application/json",
-    Authorization: `Bearer ${TOKEN}`,
-  },
-};
-
 function mapToMediaCard(
   item: any,
   mediaType: "filme" | "Série" | "Desenho",
@@ -45,7 +47,7 @@ function mapToMediaCard(
     title: item.title || item.name,
     posterUrl: item.poster_path
       ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
-      : "/placeholder.png",
+      : "https://placehold.co/500x750/18181b/71717a?text=Sem+Capa",
     mediaType: mediaType,
   };
 }
@@ -60,10 +62,26 @@ export async function getFilmesFiltrados(filtros: FiltrosBusca = {}) {
   if (filtros.with_genres) params.append("with_genres", filtros.with_genres);
 
   if (filtros.primary_release_year)
-    params.append("primay_realease_year", filtros.primary_release_year);
+    params.append("primary_release_year", filtros.primary_release_year);
 
   if (filtros.with_original_language)
     params.append("with_original_language", filtros.with_original_language);
+
+  const res = await fetch(
+    `${BASE_URL}/discover/movie?${params.toString()}`,
+    fetchOptions,
+  );
+
+  if (!res.ok) throw new Error("Erro ao carregar filmes filtrados");
+
+  const data = await res.json();
+
+  return {
+    results: (data.results || []).map((item: any) =>
+      mapToMediaCard(item, "filme"),
+    ),
+    totalPages: data.total_pages || 1,
+  };
 }
 
 export async function getSeriesEmAlta(): Promise<MediaCardProps[]> {

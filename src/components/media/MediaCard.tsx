@@ -13,13 +13,19 @@ export default function MediaCard({
   posterUrl,
   mediaType,
 }: MediaCardProps) {
+  const imagemSegura =
+    posterUrl && posterUrl.trim() !== ""
+      ? posterUrl
+      : "https://placehold.co/500x750/18181b/71717a?text=Sem+Capa";
+
   return (
     <div className="relative group/card w-36 md:w-44 lg:w-52 flex-none cursor-pointer">
-      <div className="relative w-full aspect-[2/3] overflow-hidden rounded-md transition-transform duration-300">
+      <div className="relative w-full aspect-[2/3] overflow-hidden rounded-md transition-transform duration-300 bg-zinc-900">
         <Image
-          src={posterUrl}
-          alt={title}
+          src={imagemSegura}
+          alt={title || "Capa do item"}
           fill
+          unoptimized
           className="object-cover transition-transform duration-300 group-hover/card:scale-105"
           sizes="(max-width: 768px) 144px, (max-width: 1024px) 176px, 208px"
         />
