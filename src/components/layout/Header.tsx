@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Menu, X, Search } from "lucide-react";
 
 export default function Header() {
@@ -10,6 +10,29 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      // Se o modal estiver aberto e o clique for FORA da caixinha principal, fecha o modal
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        setIsSearchOpen(false);
+      }
+    }
+
+    // Só adiciona o listener de clique se a pesquisa estiver aberta
+    if (isSearchOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isSearchOpen]);
 
   useEffect(() => {
     if (!searchQuery.trim()) {
@@ -56,7 +79,7 @@ export default function Header() {
         Stream<span className="text-purple-600 dark:text-purple-500">Flix</span>
       </Link>
 
-      {/* Navegação Principal (Visível apenas em desktop) */}
+      {/* Navegação Principal desktop */}
       <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-zinc-600 dark:text-zinc-300">
         <Link
           href="/"
@@ -147,7 +170,10 @@ export default function Header() {
       {/* Modal de Busca */}
       {isSearchOpen && (
         <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-2xl bg-zinc-900 border border-zinc-800 rounded-2xl p-4 shadow-2xl">
+          <div
+            ref={modalRef}
+            className="relative w-full max-w-2xl bg-zinc-900 border border-zinc-800 rounded-2xl p-4 shadow-2xl"
+          >
             {/* Barra de Entrada da Busca */}
             <div className="flex items-center gap-3 border-b border-zinc-800 pb-3 px-2">
               <Search className="text-zinc-400 flex-none" size={22} />

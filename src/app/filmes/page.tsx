@@ -104,7 +104,6 @@ export default function PaginaFilmes() {
       <Header />
 
       <main className="w-full px-4 md:px-8 py-4 text-white bg-zinc-950 min-h-screen">
-        <h1 className="text-3xl font-bold my-4">Explorar Filmes</h1>
         {lancamentos.length > 0 && (
           <section className="mb-8">
             <MediaRow title="lançamentos" cards={lancamentos} />
