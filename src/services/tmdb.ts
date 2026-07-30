@@ -1,4 +1,5 @@
 import { MediaCardProps } from "@/components/media/MediaCard";
+import { wait } from "next/dist/lib/wait";
 
 const BASE_URL = "https://api.themoviedb.org/3";
 
@@ -81,6 +82,45 @@ export async function getFilmesFiltrados(filtros: FiltrosBusca = {}) {
       mapToMediaCard(item, "filme"),
     ),
     totalPages: data.total_pages || 1,
+  };
+}
+
+export async function getSeriesFiltradas(filtros: FiltrosBusca): Promise<{
+  results: any[];
+  totalPages: number;
+}> {
+  const {
+    page = 1,
+    sort_by = "popularity.desc",
+    with_genres,
+    ...outrosFiltros
+  } = filtros || {};
+
+  //cria parametros de busca
+  const params = new URLSearchParams({
+    language: "pt-BR",
+    page: String(page),
+    sort_by,
+    ...(with_genres ? { with_genres } : {}),
+  });
+
+  Object.entries(outrosFiltros).forEach(([key], value) => {
+    if (value) params.append(key, String(value));
+  });
+
+  //chama a rota
+  const res = await fetch(
+    `${BASE_URL}/discover/tv?${params.toString()}`,
+    fetchOptions,
+  );
+
+  if (!res.ok) throw new Error("Erro ao buscar séries filtradas");
+
+  const data = await res.json();
+
+  return {
+    results: data.results.map((item: any) => mapToMediaCard(item, "Série")),
+    totalPages: data.total_pages,
   };
 }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getGeneros, Genero, FiltrosBusca } from "../../services/tmdb";
+import { getGeneros, Genero, FiltrosBusca } from "@/services/tmdb";
 
 interface FiltrosBarProps {
   onFilterChange: (novosFiltros: FiltrosBusca) => void;
