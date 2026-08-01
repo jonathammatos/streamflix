@@ -161,3 +161,19 @@ export async function getFilmesRecomendados(): Promise<MediaCardProps[]> {
 
   return data.results.map((item: any) => mapToMediaCard(item, "filme"));
 }
+
+//pegar links dos trailers
+
+export async function getDetalhesMidia(tipo: string, id: number | string) {
+  const url = `https://api.themoviedb.org/3/${tipo}/${id}?language=pt-BR&append_to_response=videos`;
+
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN}`,
+      accept: "application/json",
+    },
+  });
+
+  const data = await res.json();
+  return data;
+}

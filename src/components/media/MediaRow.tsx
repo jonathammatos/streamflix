@@ -7,9 +7,10 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 interface MediaRowProps {
   title: string;
   cards: MediaCardProps[];
+  mediaType?: "Desenho" | "Live-Action" | "Série" | "filme";
 }
 
-export default function MediaRow({ title, cards }: MediaRowProps) {
+export default function MediaRow({ title, cards, mediaType }: MediaRowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
 
   const handleScroll = (direction: "left" | "right") => {
@@ -45,7 +46,7 @@ export default function MediaRow({ title, cards }: MediaRowProps) {
       >
         {cards.map((card) => (
           <div key={card.id} className="flex-none snap-start">
-            <MediaCard {...card} />
+            <MediaCard {...card} mediaType={mediaType || "filme"} />
           </div>
         ))}
       </div>
