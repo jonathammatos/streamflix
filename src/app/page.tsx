@@ -21,7 +21,12 @@ export default async function Home() {
   return (
     <main className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 transition-colors">
       <Header />
-      <HeroBanner title={destaque.title} posterUrl={destaque.posterUrl} />
+      <HeroBanner
+        title={destaque.title}
+        posterUrl={destaque.posterUrl}
+        tipo="movie"
+        id={destaque.id}
+      />
 
       <MediaRow title="Séries em Alta" cards={series} />
       <MediaRow title="Desenhos e Animes" cards={desenhos} />

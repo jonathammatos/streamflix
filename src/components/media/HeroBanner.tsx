@@ -1,17 +1,27 @@
-import Button from "@/components/common/Button";
-import { Play, Info } from "lucide-react";
+"use client";
+
+import Button from "@/components/ui/button";
+import PlayerButton from "@/components/media/PlayerButton";
+import { Info } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface HeroBannerProps {
   title: string;
   posterUrl: string;
   overview?: string;
+  tipo: string;
+  id: string | number;
 }
 
 export default function HeroBanner({
   title,
   posterUrl,
   overview,
+  tipo,
+  id,
 }: HeroBannerProps) {
+  const router = useRouter();
+
   return (
     <section className="relative h-[500px] w-full flex items-end p-8 bg-zinc-900 overflow-hidden">
       {/* Imagem de Fundo (Poster) */}
@@ -30,12 +40,21 @@ export default function HeroBanner({
             "Explore este título em destaque no catálogo do StreamFlix."}
         </p>
         <div className="flex gap-4">
-          <Button variant="primary">
-            <Play className="w-5 h-5 fill-current" />
-            Play Trailer
-          </Button>
-          <Button variant="secondary">
-            <Info className="w-5 h-5" />
+          <PlayerButton mediaType={tipo} mediaId={id} />
+
+          <Button
+            variant="secondary"
+            onClick={() => {
+              const tipoDestino =
+                tipo === "filme"
+                  ? "movie"
+                  : tipo === "serie"
+                    ? "tv"
+                    : tipo || "movie";
+              router.push(`/detalhes/${tipoDestino}/${id}`);
+            }}
+          >
+            <Info className="w-5 h-5 strokeWidth={2.5}" />
             Info
           </Button>
         </div>

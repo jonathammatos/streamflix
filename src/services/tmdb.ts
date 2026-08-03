@@ -175,5 +175,13 @@ export async function getDetalhesMidia(tipo: string, id: number | string) {
   });
 
   const data = await res.json();
-  return data;
+
+  const trailer = data.videos?.results?.find(
+    (vid: any) => vid.type === "Trailer" && vid.site === "YouTube",
+  );
+
+  return {
+    ...data,
+    trailerKey: trailer ? trailer.key : null,
+  };
 }
