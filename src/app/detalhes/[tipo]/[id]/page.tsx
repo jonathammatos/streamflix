@@ -87,12 +87,9 @@ export default function PaginaDetalhes() {
         setLoading(true);
 
         //transforma os dados da API em string
+        const tipoLower = tipoMidia.toLowerCase();
         const tipoFormatado =
-          tipoMidia === "filme"
-            ? "movie"
-            : tipoMidia === "serie"
-              ? "tv"
-              : tipoMidia;
+          tipoLower === "filme" || tipoLower === "movie" ? "movie" : "tv";
 
         // Substitua a chamada original por esta (usando tipoFormatado):
         const dados = await getDetalhesMidia(tipoFormatado, idMidia);

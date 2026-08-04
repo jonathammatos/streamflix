@@ -5,7 +5,7 @@ export interface MediaCardProps {
   id: string | number;
   title: string;
   posterUrl: string;
-  mediaType: "filme" | "Série" | "Desenho" | "Live-Action";
+  mediaType: string;
 }
 
 export default function MediaCard({
@@ -19,7 +19,9 @@ export default function MediaCard({
       ? posterUrl
       : "https://placehold.co/500x750/18181b/71717a?text=Sem+Capa";
 
-  const tipoUrl = mediaType === "filme" ? "movie" : "tv";
+  const tipoNormalizado = mediaType?.toString().toLowerCase() || "";
+  const isFilme = tipoNormalizado === "filme" || tipoNormalizado === "movie";
+  const tipoUrl = isFilme ? "filme" : "serie";
 
   return (
     <Link href={`/detalhes/${tipoUrl}/${id}`}>

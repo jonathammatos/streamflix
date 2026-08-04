@@ -13,6 +13,7 @@ interface Favorito {
   movie_id: string;
   title: string;
   poster_path: string;
+  media_type?: string;
 }
 
 export default function PaginaFavoritos() {
@@ -90,39 +91,45 @@ export default function PaginaFavoritos() {
           </p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-            {favoritos.map((item) => (
-              <Link
-                key={item.id}
-                href={`/detalhes/filme/${item.movie_id}`}
-                className="group relative rounded-lg overflow-hidden bg-zinc-900 border border-zinc-800 hover:scale-105 transition-transform duration-200"
-              >
-                <Button
-                  onClick={(e) => handleRemover(e, item.movie_id)}
-                  variant="secondary"
-                  className="absolute top-2 right-2 z-10 !p-2 !rounded-full bg-black/70 hover:bg-red-600 text-zinc-300 hover:text-white border-none opacity-0 group-hover:opacity-100 transition-all duration-200"
-                  title="Remover dos favoritos"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+            {favoritos.map((item) => {
+              const tipoLower = item.media_type?.toLowerCase() || "";
+              const tipoRota =
+                tipoLower === "serie" || tipoLower === "tv" ? "serie" : "filme";
 
-                {item.poster_path ? (
-                  <img
-                    src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
-                    alt={item.title}
-                    className="w-full h-72 object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-72 bg-zinc-800 flex items-center justify-center p-4 text-center text-sm">
-                    {item.title}
+              return (
+                <Link
+                  key={item.id}
+                  href={`/detalhes/${tipoRota}/${item.movie_id}`}
+                  className="group relative rounded-lg overflow-hidden bg-zinc-900 border border-zinc-800 hover:scale-105 transition-transform duration-200"
+                >
+                  <Button
+                    onClick={(e) => handleRemover(e, item.movie_id)}
+                    variant="secondary"
+                    className="absolute top-2 right-2 z-10 !p-2 !rounded-full bg-black/70 hover:bg-red-600 text-zinc-300 hover:text-white border-none opacity-0 group-hover:opacity-100 transition-all duration-200"
+                    title="Remover dos favoritos"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+
+                  {item.poster_path ? (
+                    <img
+                      src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
+                      alt={item.title}
+                      className="w-full h-72 object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-72 bg-zinc-800 flex items-center justify-center p-4 text-center text-sm">
+                      {item.title}
+                    </div>
+                  )}
+                  <div className="p-3 bg-zinc-900/90">
+                    <h2 className="font-semibold text-sm truncate">
+                      {item.title}
+                    </h2>
                   </div>
-                )}
-                <div className="p-3 bg-zinc-900/90">
-                  <h2 className="font-semibold text-sm truncate">
-                    {item.title}
-                  </h2>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         )}
       </main>

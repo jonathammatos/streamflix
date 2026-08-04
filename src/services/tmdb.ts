@@ -104,7 +104,7 @@ export async function getSeriesFiltradas(filtros: FiltrosBusca): Promise<{
     ...(with_genres ? { with_genres } : {}),
   });
 
-  Object.entries(outrosFiltros).forEach(([key], value) => {
+  Object.entries(outrosFiltros).forEach(([key, value]) => {
     if (value) params.append(key, String(value));
   });
 
@@ -165,7 +165,12 @@ export async function getFilmesRecomendados(): Promise<MediaCardProps[]> {
 //pegar links dos trailers
 
 export async function getDetalhesMidia(tipo: string, id: number | string) {
-  const url = `https://api.themoviedb.org/3/${tipo}/${id}?language=pt-BR&append_to_response=videos`;
+  // Converte qualquer variação ("filme", "Série", "Desenho", "serie") para o padrão aceito pelo TMDB ("movie" ou "tv")
+  const tipoNormalizado = tipo?.toLowerCase() || "";
+  const tipoTmdb =
+    tipoNormalizado === "filme" || tipoNormalizado === "movie" ? "movie" : "tv";
+
+  const url = `${BASE_URL}/${tipoTmdb}/${id}?language=pt-BR&append_to_response=videos`;
 
   const res = await fetch(url, {
     headers: {
@@ -173,6 +178,8 @@ export async function getDetalhesMidia(tipo: string, id: number | string) {
       accept: "application/json",
     },
   });
+
+  if (!res.ok) throw new Error("Erro ao buscar detalhes da mídia");
 
   const data = await res.json();
 

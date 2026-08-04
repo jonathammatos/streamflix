@@ -46,7 +46,10 @@ export default function MediaRow({ title, cards, mediaType }: MediaRowProps) {
       >
         {cards.map((card) => (
           <div key={card.id} className="flex-none snap-start">
-            <MediaCard {...card} mediaType={mediaType || "filme"} />
+            <MediaCard
+              {...card}
+              mediaType={mediaType || card.mediaType || "filme"}
+            />
           </div>
         ))}
       </div>
