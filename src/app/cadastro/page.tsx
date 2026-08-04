@@ -8,6 +8,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
 export default function CadastroPage() {
+  const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -21,6 +22,11 @@ export default function CadastroPage() {
     e.preventDefault();
     setError(null);
 
+    if (!nome.trim()) {
+      setError("O campo Nome é obrigatório.");
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError("As senhas não coincidem.");
       return;
@@ -33,11 +39,14 @@ export default function CadastroPage() {
 
     setLoading(true);
 
-    console.log("Enviando dados:", { email, password });
-
     const { error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          full_name: nome.trim(),
+        },
+      },
     });
 
     if (error) {
@@ -68,6 +77,20 @@ export default function CadastroPage() {
 
           <form onSubmit={handleRegister} className="space-y-4">
             <div>
+              <div>
+                <label className="block text-sm font-medium mb-1 text-zinc-300">
+                  Nome Completo
+                </label>
+                <input
+                  type="text"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-purple-600 transition"
+                  placeholder="Digite seu nome completo"
+                />
+              </div>
+
               <label className="block text-sm font-medium mb-1 text-zinc-300">
                 E-mail
               </label>
