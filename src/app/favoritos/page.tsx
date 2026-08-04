@@ -92,9 +92,18 @@ export default function PaginaFavoritos() {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
             {favoritos.map((item) => {
-              const tipoLower = item.media_type?.toLowerCase() || "";
+              const tipoNormalizado = (item.media_type || "")
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
+
               const tipoRota =
-                tipoLower === "serie" || tipoLower === "tv" ? "serie" : "filme";
+                tipoNormalizado === "serie" ||
+                tipoNormalizado === "series" ||
+                tipoNormalizado === "desenho" ||
+                tipoNormalizado === "tv"
+                  ? "serie"
+                  : "filme";
 
               return (
                 <Link

@@ -41,15 +41,23 @@ export async function getGeneros(): Promise<Genero[]> {
 
 function mapToMediaCard(
   item: any,
-  mediaType: "filme" | "Série" | "Desenho",
+  mediaTypePadrao: "filme" | "Série" | "Desenho",
 ): MediaCardProps {
+  // Se a API do TMDB mandar explicitamente o tipo (comum em listas mistas, busca ou trending), respeitamos ele
+  let tipoFinal = mediaTypePadrao;
+  if (item.media_type === "tv") {
+    tipoFinal = "Série";
+  } else if (item.media_type === "movie") {
+    tipoFinal = "filme";
+  }
+
   return {
     id: item.id.toString(),
     title: item.title || item.name,
     posterUrl: item.poster_path
       ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
       : "https://placehold.co/500x750/18181b/71717a?text=Sem+Capa",
-    mediaType: mediaType,
+    mediaType: tipoFinal,
   };
 }
 
@@ -165,21 +173,31 @@ export async function getFilmesRecomendados(): Promise<MediaCardProps[]> {
 //pegar links dos trailers
 
 export async function getDetalhesMidia(tipo: string, id: number | string) {
-  // Converte qualquer variação ("filme", "Série", "Desenho", "serie") para o padrão aceito pelo TMDB ("movie" ou "tv")
   const tipoNormalizado = tipo?.toLowerCase() || "";
-  const tipoTmdb =
+  let tipoTmdb =
     tipoNormalizado === "filme" || tipoNormalizado === "movie" ? "movie" : "tv";
 
-  const url = `${BASE_URL}/${tipoTmdb}/${id}?language=pt-BR&append_to_response=videos`;
+  let url = `${BASE_URL}/${tipoTmdb}/${id}?language=pt-BR&append_to_response=videos`;
+  let res = await fetch(url, fetchOptions);
 
-  const res = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN}`,
-      accept: "application/json",
-    },
-  });
+  // SE der 404 (tipo errado enviado na URL), tenta inverter automaticamente (movie <-> tv)
+  if (!res.ok && res.status === 404) {
+    const tipoAlternativo = tipoTmdb === "movie" ? "tv" : "movie";
+    const urlAlternativa = `${BASE_URL}/${tipoAlternativo}/${id}?language=pt-BR&append_to_response=videos`;
 
-  if (!res.ok) throw new Error("Erro ao buscar detalhes da mídia");
+    const resAlternativa = await fetch(urlAlternativa, fetchOptions);
+    if (resAlternativa.ok) {
+      res = resAlternativa;
+      tipoTmdb = tipoAlternativo; // Corrige o tipo em tempo de execução
+    }
+  }
+
+  if (!res.ok) {
+    const errorBody = await res.text();
+    console.error(`Erro TMDB [Status ${res.status}] na URL: ${url}`);
+    console.error(`Detalhes do erro:`, errorBody);
+    throw new Error(`Erro ao buscar detalhes da mídia (${tipoTmdb}/${id})`);
+  }
 
   const data = await res.json();
 

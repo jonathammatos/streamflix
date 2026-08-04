@@ -19,9 +19,19 @@ export default function MediaCard({
       ? posterUrl
       : "https://placehold.co/500x750/18181b/71717a?text=Sem+Capa";
 
-  const tipoNormalizado = mediaType?.toString().toLowerCase() || "";
-  const isFilme = tipoNormalizado === "filme" || tipoNormalizado === "movie";
-  const tipoUrl = isFilme ? "filme" : "serie";
+  const tipoNormalizado =
+    mediaType
+      ?.toString()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") || "";
+
+  const isSerie =
+    tipoNormalizado === "serie" ||
+    tipoNormalizado === "series" ||
+    tipoNormalizado === "desenho" ||
+    tipoNormalizado === "tv";
+  const tipoUrl = isSerie ? "serie" : "filme";
 
   return (
     <Link href={`/detalhes/${tipoUrl}/${id}`}>
