@@ -7,19 +7,68 @@ import PlayerButton from "@/components/media/PlayerButton";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import TrailerModal from "@/components/media/TrailerModal";
+import { createClient } from "@/lib/supabase/client";
+import Button from "@/components/ui/button";
+import { Star } from "lucide-react";
 
+//Renderiza pagina com detalhes do filme
 export default function PaginaDetalhes() {
   const { tipo, id } = useParams();
-
   const tipoMidia = Array.isArray(tipo) ? tipo[0] : (tipo ?? "");
   const idMidia = Array.isArray(id) ? id[0] : (id ?? "");
-
   const [midia, setMidia] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-
   const [modalAberto, setModalAberto] = useState(false);
-
   const [trailerKey, setTrailerKey] = useState<string | null>(null);
+  const supabase = createClient();
+  const [isFavorito, setIsFavorito] = useState(false);
+
+  // Checa se já está favoritado ao carregar
+  useEffect(() => {
+    async function checarFavorito() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user || !idMidia) return;
+
+      const { data } = await supabase
+        .from("favoritos")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("movie_id", idMidia)
+        .maybeSingle();
+
+      if (data) setIsFavorito(true);
+    }
+    checarFavorito();
+  }, [idMidia]);
+
+  // Função para favoritar / desfavoritar
+  async function handleFavorito() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return alert("Faça login para favoritar!");
+
+    if (isFavorito) {
+      await supabase
+        .from("favoritos")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("movie_id", idMidia);
+      setIsFavorito(false);
+    } else {
+      await supabase.from("favoritos").insert({
+        user_id: user.id,
+        movie_id: idMidia,
+        title: tituloDaMidia,
+        poster_path: midia?.poster_path,
+      });
+      setIsFavorito(true);
+    }
+  }
+
+  //
 
   //efeito de carregar vídeo
   useEffect(() => {
@@ -125,7 +174,6 @@ export default function PaginaDetalhes() {
             <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent" />
           </div>
 
-          {/* Camada 2: O Texto (Título e Ano) */}
           <div className="relative z-10 px-6 md:px-16 pb-12 w-full max-w-7xl">
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4 text-white drop-shadow-md">
               {tituloDaMidia}
@@ -143,6 +191,21 @@ export default function PaginaDetalhes() {
 
             <div className="flex items-center gap-4">
               <PlayerButton mediaType={tipoMidia} mediaId={idMidia} />
+
+              <Button
+                onClick={handleFavorito}
+                variant={isFavorito ? "outline" : "secondary"}
+                className={
+                  isFavorito
+                    ? "border-red-600 text-red-500 hover:bg-red-600/10"
+                    : ""
+                }
+              >
+                <Star
+                  className={`w-5 h-5 ${isFavorito ? "fill-purple-400 text-purple-400" : ""}`}
+                />
+                {isFavorito ? "Remover dos Favoritos" : "Favoritar"}
+              </Button>
             </div>
           </div>
         </section>
